@@ -4,7 +4,7 @@ from typing import Iterable, Callable
 
 def create_population(size: int, bounds: tuple) -> np.ndarray:
     """
-    Creates an initial population for a genetic algorithm.
+    Create an initial population for a genetic algorithm.
 
     Parameters
     ----------
@@ -43,7 +43,7 @@ def objective(population: np.ndarray, funcs: Iterable[Callable]) -> np.ndarray:
 
 def pareto_dominance(i1: np.ndarray, i2: np.ndarray) -> bool:
     """
-    Checks if `i1` dominates `i2` in a Pareto sense.
+    Check if `i1` dominates `i2` in a Pareto sense.
 
     `i` -> `individual`
 
@@ -66,7 +66,7 @@ def pareto_dominance(i1: np.ndarray, i2: np.ndarray) -> bool:
 
 def assign_fronts(p_obj: np.ndarray) -> dict[int, set[int]]:
     """
-    Assigns Pareto fronts to a population based on objective values.
+    Assign Pareto fronts to a population based on objective values.
 
     Parameters
     ----------
@@ -130,3 +130,27 @@ def assign_fronts(p_obj: np.ndarray) -> dict[int, set[int]]:
     assert p_obj.shape[0] == len(set().union(*F.values()))
 
     return F
+
+
+def flatten_fronts(p_obj: np.ndarray, fronts: dict[set[int]]) -> np.ndarray:
+    """
+    Assign a front number to each individual in the population based on the provided fronts.
+
+    Parameters
+    ----------
+    p_obj : np.ndarray
+        A 2D array where each row represents an individual and each column represents an objective value.
+    fronts : dict of set of int
+        A dictionary where the keys are front numbers (starting from 0) and the values are sets of indices
+        corresponding to individuals in that front.
+
+    Returns
+    -------
+    np.ndarray
+        A 1D array where each element corresponds to the front number assigned to the respective individual
+        in the population.
+    """
+    f = np.zeros(p_obj.shape[0])
+    for front, members in fronts.items():
+        f[list(members)] = front
+    return f
