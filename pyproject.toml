@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "nsga-2-demo"
+name = "nsga_2"
 version = "0.1.0"
 description = ""
 authors = ["Cameron <cameronwood858@googlemail.com>"]
@@ -16,6 +16,7 @@ pytest-mock = "^3.14.0"
 ipykernel = "^6.29.5"
 autoreload = "^0.1.2"
 jupyterlab = "^4.4.0"
+ipython = "^9.1.0"
 
 
 [build-system]
