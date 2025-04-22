@@ -10,6 +10,12 @@ python = "^3.13"
 matplotlib = "^3.10.1"
 numpy = "^2.2.5"
 pandas = "^2.2.3"
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+pytest-mock = "^3.14.0"
+ipykernel = "^6.29.5"
+autoreload = "^0.1.2"
+jupyterlab = "^4.4.0"
 
 
 [build-system]
