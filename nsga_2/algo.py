@@ -39,3 +39,26 @@ def objective(population: np.ndarray, funcs: Iterable[Callable]) -> np.ndarray:
         A numpy array of shape (size, n_objectives) containing the objective values for each individual in the population.
     """
     return np.hstack([f(population) for f in funcs])
+
+
+def pareto_dominance(i1: np.ndarray, i2: np.ndarray) -> bool:
+    """
+    Checks if `i1` dominates `i2` in a Pareto sense.
+
+    `i` -> `individual`
+
+    Parameters
+    ----------
+    i1 : np.ndarray
+        The objective values of the first individual.
+    i2 : np.ndarray
+        The objective values of the second individual.
+
+    Returns
+    -------
+    bool
+        True if `i1` dominates `i2`, False otherwise.
+    """
+    # i1 dominates i2 if it is at least as good in all objectives and strictly better in at least one
+    # assumes all objectives are to minimise
+    return np.all(i1 <= i2) and np.any(i1 < i2)
