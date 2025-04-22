@@ -259,3 +259,35 @@ def sbx_crossover(
     c2 = 0.5 * ((1 - beta) * p1 + (1 + beta) * p2)
 
     return c1, c2
+
+
+def polynomial_mutation(x: np.ndarray, bounds: tuple, eta=5) -> np.ndarray:
+    """
+    Perform polynomial mutation on a given array.
+
+    Parameters
+    ----------
+    x : np.ndarray
+        The input array to be mutated.
+    bounds : tuple
+        A tuple specifying the lower and upper bounds for the mutation
+        (bounds[0] is the lower bound, bounds[1] is the upper bound).
+    eta : int, optional
+        The distribution index that controls the extent of the mutation.
+        Higher values of `eta` result in smaller mutations. Default is 5.
+
+    Returns
+    -------
+    np.ndarray
+        The mutated array, with values clipped to the specified bounds.
+    """
+    u = np.random.uniform(size=x.shape)
+    # pertubation
+    exponent = 1 / (1 + eta)
+    delta = np.where(
+        u < 0.5, ((2 * u) ** exponent) - 1, 1 - ((2 * (1 - u)) ** exponent)
+    )
+    x_mutated = x + (delta * (bounds[1] - bounds[0]))
+    x_mutated = np.clip(x_mutated, bounds[0], bounds[1])
+
+    return x_mutated
