@@ -154,3 +154,41 @@ def flatten_fronts(p_obj: np.ndarray, fronts: dict[set[int]]) -> np.ndarray:
     for front, members in fronts.items():
         f[list(members)] = front
     return f
+
+
+def calculate_crowding_distance(p_obj: np.ndarray) -> np.ndarray:
+    """
+    Calculate the crowding distance for each individual.
+
+    Parameters
+    ----------
+    p_obj : np.ndarray
+        A (N, M) array where N is the number of individuals and M is the number of objectives.
+
+    Returns
+    -------
+    np.ndarray
+        An array of crowding distances for each individual.
+    """
+    crowding_distances = np.zeros(p_obj.shape[0])
+
+    for m in range(p_obj.shape[1]):  # For each objective
+        m_values = p_obj[:, m]
+        m_range = m_values.max() - m_values.min()
+
+        # Sort m_values and get sorted indices
+        m_sorted_indices = np.argsort(m_values)
+
+        # Set the crowding distance for the boundary points to inf
+        boundary_indices = m_sorted_indices[[0, -1]]
+        crowding_distances[boundary_indices] = np.inf
+
+        # Update the in-between points
+        for i in range(1, m_sorted_indices.shape[0] - 1):
+            prev_i = m_sorted_indices[i - 1]
+            next_i = m_sorted_indices[i + 1]
+
+            increment = (m_values[next_i] - m_values[prev_i]) / m_range
+            crowding_distances[m_sorted_indices[i]] += increment
+
+    return crowding_distances
