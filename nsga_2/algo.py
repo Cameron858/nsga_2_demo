@@ -291,3 +291,71 @@ def polynomial_mutation(x: np.ndarray, bounds: tuple, eta=5) -> np.ndarray:
     x_mutated = np.clip(x_mutated, bounds[0], bounds[1])
 
     return x_mutated
+
+
+def generate_offspring(
+    p_obj: np.ndarray,
+    p: np.ndarray,
+    fronts: np.ndarray,
+    crowding_distances: np.ndarray,
+    bounds: tuple,
+    sbx_prob: float = 0.9,
+    mutation_prob: float = 0.05,
+) -> np.ndarray:
+    """
+    Generate offspring using tournament selection, SBX crossover, and polynomial mutation.
+
+    Parameters
+    ----------
+    p_obj : np.ndarray
+        Objective values of the current population.
+    p : np.ndarray
+        Current population.
+    fronts : np.ndarray
+        Array indicating the front number for each individual.
+    crowding_distances : np.ndarray
+        Crowding distances for each individual.
+    bounds : tuple
+        Tuple containing lower and upper bounds (both np.ndarray) for variables.
+    sbx_prob : float, optional
+        Probability of performing SBX crossover, by default 0.9.
+    mutation_prob : float, optional
+        Probability of applying polynomial mutation to each child, by default 0.05.
+
+    Returns
+    -------
+    np.ndarray
+        New offspring population of the same size as the original.
+    """
+    # create mating pool
+    mating_pool = []
+    while len(mating_pool) < p.shape[0]:
+
+        # select a winner
+        winner_i = tournament_select(p_obj, fronts, crowding_distances)
+        mating_pool.append(p[winner_i])
+
+    assert len(mating_pool) == p.shape[0]
+
+    # breed in pairs
+    Q = []
+    for i in range(0, p.shape[0], 2):
+
+        p1 = mating_pool[i]
+        p2 = mating_pool[i + 1]
+
+        # roll for crossover, else propagate parents as children
+        if np.random.rand() < sbx_prob:
+            children = sbx_crossover(p1, p2)
+        else:
+            children = p1, p2
+
+        # independantly mutate children
+        children = [
+            polynomial_mutation(c, bounds) if np.random.rand() < mutation_prob else c
+            for c in children
+        ]
+
+        Q.extend(children)
+
+    return np.array(Q)
