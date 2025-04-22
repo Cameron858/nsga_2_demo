@@ -192,3 +192,39 @@ def calculate_crowding_distance(p_obj: np.ndarray) -> np.ndarray:
             crowding_distances[m_sorted_indices[i]] += increment
 
     return crowding_distances
+
+
+def tournament_select(
+    p_obj: np.ndarray, fronts: dict[set[int]], crowding_distances: np.ndarray
+) -> np.ndarray:
+    """
+    Perform tournament selection based on Pareto fronts and crowding distances.
+
+    Parameters
+    ----------
+    p_obj : np.ndarray
+        The population objective values, where each row corresponds to an individual
+        and each column corresponds to an objective.
+    fronts : dict[set[int]]
+        A list of Pareto fronts, where each front is a list of indices corresponding
+        to individuals in the population.
+    crowding_distances : np.ndarray
+        An array of crowding distances for each individual in the population.
+
+    Returns
+    -------
+    np.ndarray
+        The selected individual from the population.
+    """
+    fronts = flatten_fronts(p_obj, fronts)
+
+    members = np.array(list(zip(fronts, crowding_distances)))
+    selected_i = np.random.choice(p_obj.shape[0], 2, replace=False)
+    selected = members[selected_i]
+
+    # sort by front (ascending), then by crowding distance (descending, so we negate)
+    winner_rel_i = np.lexsort((-selected[:, 1], selected[:, 0]))[0]
+    winner_abs_i = selected_i[winner_rel_i]
+    winner = p_obj[winner_abs_i]
+
+    return winner
