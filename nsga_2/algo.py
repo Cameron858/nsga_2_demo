@@ -227,3 +227,35 @@ def tournament_select(
     winner_abs_i = selected_i[winner_rel_i]
 
     return winner_abs_i
+
+
+def sbx_crossover(
+    p1: np.ndarray, p2: np.ndarray, eta=20
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Perform Simulated Binary Crossover (SBX) between two parent solutions.
+
+    Parameters
+    ----------
+    p1 : np.ndarray
+        The first parent solution.
+    p2 : np.ndarray
+        The second parent solution.
+    eta : int, optional
+        The distribution index, which controls the spread of offspring solutions.
+        Higher values result in offspring closer to the parents. Default is 20.
+
+    Returns
+    -------
+    tuple[np.ndarray]
+        A tuple containing two offspring solutions as NumPy arrays.
+    """
+    u = np.random.uniform(size=p1.shape)
+    beta = np.where(
+        u <= 0.5, (2 * u) ** (1 / (eta + 1)), (1 / (2 * (1 - u))) ** (1 / (eta + 1))
+    )
+
+    c1 = 0.5 * ((1 + beta) * p1 + (1 - beta) * p2)
+    c2 = 0.5 * ((1 - beta) * p1 + (1 + beta) * p2)
+
+    return c1, c2
